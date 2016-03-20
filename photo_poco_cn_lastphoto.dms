@@ -1,0 +1,82 @@
+//Dorothy2
+//caption=photo.poco.cn/lastphoto
+//version=0.1
+//hint=irv list
+//match=http://photo.poco.cn/lastphoto[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+//	var wait = 10 * 1000;	//milisec
+
+	//debug=true;
+//	println('wait-'+wait/1000+'sec');
+//	sleep(wait);
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':'', 'User-Agent':userAgent});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	urlinfo.url.match('http://photo.poco.cn/(.+)\.xhtml');
+	var basename = RegExp.$1;
+
+	var result = http.data.match(/originPhoto:'.+?'/g);
+	println(result);
+	if (null == result) {
+		exit();
+	}
+	result = result.toString().split(",");
+
+	var num = 1;
+	for (value in result) {
+//		println(result[value]);
+
+		result[value].match(/originPhoto:'(.+?)'/);
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		if(!imgSrc.match('.+/(.+?)\?.*$')){
+			if(!imgSrc.match('.+/(.+?)$')){
+				println('error: fileName');
+				exit();
+			}
+		}
+		var filename = RegExp.$1;
+		filename.match('.+(\..+)');
+		var ext = RegExp.$1;
+
+		filename = basename + '_' + num + ext;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: filename }
+		];
+		additem.send (list);
+		++num;
+	}
+
+	println('ok');
+
+	exit ();
+}
