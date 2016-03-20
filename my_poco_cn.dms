@@ -1,0 +1,63 @@
+//Dorothy2
+//caption=my.poco.cn
+//version=0.1
+//hint=irv list
+//match=http://my.poco.cn/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('photoImgArr\[[0-9]+\].orgimg.+?;', 'g');
+	println(result);
+	if (null == result) {
+		exit();
+	}
+	result = result.toString().split(",");
+
+	for (value in result) {
+		println(result[value]);
+
+		result[value].match(/photoImgArr.([0-9]+)..orgimg.+'(.+)'/);
+		var index = RegExp.$1;
+		var imgSrc = RegExp.$2;
+
+		println('index=' + index);
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/.+(\..+)\?.+');
+		var filename = index + RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: filename }
+		];
+		additem.send (list);
+	}
+
+	exit ();
+}
