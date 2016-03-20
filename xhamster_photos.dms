@@ -1,0 +1,68 @@
+//Dorothy2
+//caption=xhamster.com/photos
+//version=0.1
+//hint=irv list
+//match=http://[^/]*xhamster.com/photos/gallery/[^g]
+//ResponseMatch=
+//author=xor(modified:rakka74)
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match("<div class='gallery iItem '.+?</div>", 'g');
+	var num = 1;
+	for(value in result) {
+//		println(result[value]);
+		result[value].match("href='(.+?)'");
+		println('photo-page=' + RegExp.$1);
+
+		url=new URL(RegExp.$1);
+		http=download(url.url,false,{'Cookie':''});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+
+		var result2 = http.data.match("<img.+?tid='[0-9]+?'.*?>");
+		result2.toString().match("src='(.+?)'");
+
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+		if(!imgSrc.match('.+/(.+?)\?.*$')){
+			if(!imgSrc.match('.+/(.+?)$')){
+				println('error: fileName');
+				exit();
+			}
+		}
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+		++num;
+	}
+
+	exit ();
+}

@@ -1,0 +1,105 @@
+//Dorothy2
+//caption=E-Hentai
+//version=0.1
+//hint=irv list
+//match=http://g.e-hentai.org/[^g]
+//ResponseMatch=
+//author=xor(modified:rakka74)
+//path=program
+//priority=500
+//extension=HttpRequest,HttpResponse
+//end
+function HttpRequest(){
+
+	var wait = 60000;	//milisec
+wait=1000*15;//90000;
+	var limit_wait=3;	//min
+
+	//debug=true;
+	println('wait-'+wait/1000+'sec');
+	sleep(wait);
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	
+	var cookie=http.responseHeader.cookie.data;
+
+
+
+	if(!http.data.match('<img id="img" src="(.+?)" .*?/>')){
+		println('error: url2');
+		exit();
+	}
+	var imgSrc = RegExp.$1;
+	while (imgSrc.match('&amp;')) {
+		imgSrc=imgSrc.replace('&amp;', '&');
+	}
+	println(imgSrc);
+	var url2=new URL(imgSrc);
+//http://37.48.81.80/ehg/image.php?f=0bd6d69a1593025fa31f03827cb7a0a9c8b9e42d-194889-1024-576-jpg&amp;t=400829-0dce82aa92334a2c5cbc55e532a3dd2b8f44fe9b&amp;n=ev_sae011a.jpg
+//‚Ìê‡AÅŒã‚Ì / ˆÈ‰º‚Å‚Íƒ_ƒ
+	var url2_=imgSrc;
+	if(!url2_.match('image.php.+n=(.+)')){
+		if(!url2_.match('.+/(.+)')){
+			println('error: fileName');
+			exit();
+		}
+	}
+	if(item.filename==''){
+		Dorothy.fileName=RegExp.$1;
+	}
+	headers.Referer=urlinfo.url;
+	urlinfo.url=url2.url;
+	headers.host=url2.host;
+	headers.Cookie=cookie;
+
+//	headers.Connection='keep-alive';
+	headers.Accept='image/png,image/*;q=0.8,*/*;q=0.5';
+	headers['Accept-Encoding']='gzip, deflate';
+	headers['Accept-Language']='ja,en-US;q=0.7,en;q=0.3';
+	headers['Cache-Control']='max-age=0';
+	headers['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+
+}
+,
+function HttpResponse(){
+	println('dorothy2C');
+	if(headers.hasKey('content-disposition')){
+		var flg=false;
+		switch (headers['content-disposition']){
+			case 'inline; filename="403s.gif"'		:flg=true;
+			case 'inline; filename="403.gif"'		:flg=true;
+			case 'inline; filename="509s.gif"'		:flg=true;
+			case 'inline; filename="509.gif"'		:flg=true;
+			case 'inline; filename="cookiemonster.gif"'	:flg=true;
+		}
+
+		if(flg){
+			urlinfo.StatusCode = 509;
+			//exit();
+			println('””””””‚c‚n‚v‚m‚k‚n‚`‚c@‚k‚h‚l‚h‚s””””””');
+			var wait=3;
+			println('wait-'+wait+'min');
+			sleep(wait*60*1000);
+			return true;
+		}
+	}
+
+
+	if(headers.hasKey('content-length')){
+		if(urlinfo.StatusCode==200 && headers['content-length']==0){
+			println('size error');
+			var wait=3;
+			sleep(wait*60*1000);
+			urlinfo.StatusCode = 500;
+			return true;
+		}
+	}
+
+}
+,
+HttpRequest;

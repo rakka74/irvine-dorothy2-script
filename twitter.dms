@@ -1,0 +1,69 @@
+//Dorothy2
+//caption=twitter静止画
+//version=0.02
+//hint=twitter.com・twilog.orgのページからURLを渡してください
+//match=twitter.com/[^/]+/status
+//author=Abcdefgh
+//path=program
+//priority=500
+//end
+//created 12,Dec.,2011 by Abcdefgh
+//modified 10,Mar.,2012 by Abcdefgh
+//modified 11,Sept.,2012 by Abcdefgh
+//オリジナルサイズ画像DLに対応
+
+function(){
+	println('twitter.dms start');
+	// 画像ページURLをモバイルページURLに変換
+	var title = urlinfo.url;
+	title = title.replace(/http:/,"https:");
+	title = title.replace(/\/twitter[.]com/,"/mobile.twitter.com");
+	var url = new URL(title);
+	urlinfo.url = url.url;
+	headers.host = url.host;
+	// 画像ページをダウンロード
+	common_load('download');
+	var http = download(urlinfo.url);
+	if(http.responseHeader.code != 200){
+		return retry('error--->' + http.responseHeader.code);
+	}
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	// 画像URLを抽出
+	result = http.data.match(/(href|src)=\"([^"]+twimg[.]com\/media\/[^\/"]+)\"/g);
+
+	var num = 1;
+	for(value in result) {
+//			println(result[value]);
+			result[value].match(/(href|src)=\"([^"]+twimg[.]com\/media\/[^\/"]+)\"/);
+
+			var title=RegExp.$2;
+			var title=title.replace(/https/,"http");
+			var title=title.replace(/:(small|med|large)/,"");
+			var title=title + ":orig";
+
+			if (!title.match(/([^\/:]+):orig$/)) {
+				println('error---> ファイル名が見つかりません');
+				exit();
+			}
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: title, Filename: num + '_' + filename }
+			];
+			additem.send (list);
+			++num;
+	}
+
+	exit ();
+}

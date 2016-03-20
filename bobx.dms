@@ -1,0 +1,107 @@
+//Dorothy2
+//caption=bobx
+//version=0.1
+//hint=irv list
+//match=http://www.bobx.com/[^g]
+//ResponseMatch=
+//author=xor(modified:rakka74)
+//path=program
+//priority=500
+//extension=HttpRequest,HttpResponse
+//end
+function HttpRequest(){
+
+//http://www.bobx.com/av-idol/tomomi-saeki/photoset/digigra-set-_05-0-2-8.html
+//‚É‚‰ğ‘œ“x‚Ì‰æ‘œƒy[ƒW‚Ö‚ÌƒŠƒ“ƒN(large-`)‚ª‚ ‚é‚Ì‚Å‚»‚ÌƒŠƒ“ƒN‚ğƒAƒCƒeƒ€“o˜^‚·‚éB
+// —á) http://www.bobx.com/av-idol/tomomi-saeki/large-tomomi-saeki-2654295/
+// ‚ğƒAƒCƒeƒ€“o˜^‚·‚é‚Æ
+// referer ‚ğ http://www.bobx.com/av-idol/tomomi-saeki/large-tomomi-saeki-2654295/
+// ‚É‚µ‚Ä http://www.bobx.com/av-idol/tomomi-saeki/tomomi-saeki-02654295.jpg
+// ‚ğƒ_ƒEƒ“ƒ[ƒh‚·‚éB
+
+	var wait = 10 * 1000;	//milisec
+
+	//debug=true;
+	println('wait-'+wait/1000+'sec');
+	sleep(wait);
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':'', 'User-Agent':userAgent});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	if(!http.data.match('img src="(.+?)"')){
+		println('error: url2');
+		exit();
+	}
+	var imgSrc = new URL('http://www.bobx.com' + RegExp.$1);
+	println('imgSrc=' + imgSrc);
+
+	var url2=new URL(imgSrc);
+	if(!imgSrc.url.match('http://www.bobx.com/.+?/.+?/(.+)')){
+		println('error: fileName');
+		exit();
+	}
+	if(item.filename==''){
+		Dorothy.fileName=RegExp.$1;
+//		Dorothy.fileName='a.jpg';//RegExp.$1;
+	}
+
+	headers.Referer=urlinfo.url;
+	urlinfo.url=url2.url;
+	headers.host=url2.host;
+	headers.Cookie=cookie;
+
+	headers.Connection='keep-alive';
+	headers.Accept='image/png,image/*;q=0.8,*/*;q=0.5';
+	headers['Accept-Encoding']='gzip, deflate';
+	headers['Accept-Language']='ja,en-US;q=0.7,en;q=0.3';
+	headers['Cache-Control']='max-age=0';
+	headers['User-Agent']=userAgent;
+
+
+}
+,
+function HttpResponse(){
+	println('dorothy2C');
+	if(headers.hasKey('content-disposition')){
+		var flg=false;
+		switch (headers['content-disposition']){
+			case 'inline; filename="403s.gif"'		:flg=true;
+			case 'inline; filename="403.gif"'		:flg=true;
+			case 'inline; filename="509s.gif"'		:flg=true;
+			case 'inline; filename="509.gif"'		:flg=true;
+			case 'inline; filename="cookiemonster.gif"'	:flg=true;
+		}
+
+		if(flg){
+			urlinfo.StatusCode = 509;
+			//exit();
+			println('””””””‚c‚n‚v‚m‚k‚n‚`‚c@‚k‚h‚l‚h‚s””””””');
+			var wait=3;
+			println('wait-'+wait+'min');
+			sleep(wait*60*1000);
+			return true;
+		}
+	}
+
+
+	if(headers.hasKey('content-length')){
+		if(urlinfo.StatusCode==200 && headers['content-length']==0){
+			println('size error');
+			var wait=3;
+			sleep(wait*60*1000);
+			urlinfo.StatusCode = 500;
+			return true;
+		}
+	}
+
+}
+,
+HttpRequest;

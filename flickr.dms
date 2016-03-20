@@ -1,0 +1,34 @@
+//Dorothy2
+//caption=Flickr
+//version=0.08
+//hint=https://www.flickr.com/photos/ƒ†[ƒU[ID/‰æ‘œID/ ‚ğ“o˜^
+//match=https?://www.flickr.com/photos/
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	var cookie=http.responseHeader.cookie.data;
+
+	http.data.match('"o":{"displayUrl":".+?","width":[0-9]+,"height":[0-9]+,"url":"(.+?)","key":"o"}');
+	// url‚Í\/\/c2.staticflickr.com\/2\/1706\/25405480630_c8a149e01f_o.jpg‚È•¶š—ñ‚È‚Ì‚Å\‚ğíœ
+	var imgSrc = 'http:' + RegExp.$1.replace(/\\/g, '');
+	println('imgSrc=' + imgSrc);
+
+	imgSrc.match('.+/(.+)');
+	if(item.filename==''){
+		Dorothy.fileName=RegExp.$1;
+	}
+	headers.Referer=urlinfo.url;
+	url = new URL(imgSrc);
+	urlinfo.url=url.url;
+	headers.host=url.host;
+	headers.Cookie=cookie;
+}
