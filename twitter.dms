@@ -1,16 +1,12 @@
 //Dorothy2
 //caption=twitter静止画
-//version=0.02
-//hint=twitter.com・twilog.orgのページからURLを渡してください
+//version=0.1
+//hint=例）https://twitter.com/dear_rain0111/status/664335115888164864をアイテム登録
 //match=twitter.com/[^/]+/status
-//author=Abcdefgh
+//author=rakka
 //path=program
 //priority=500
 //end
-//created 12,Dec.,2011 by Abcdefgh
-//modified 10,Mar.,2012 by Abcdefgh
-//modified 11,Sept.,2012 by Abcdefgh
-//オリジナルサイズ画像DLに対応
 
 function(){
 	println('twitter.dms start');
@@ -41,6 +37,10 @@ function(){
 	// 画像URLを抽出
 	result = http.data.match(/(href|src)=\"([^"]+twimg[.]com\/media\/[^\/"]+)\"/g);
 
+	// ファイル名
+	urlinfo.url.match('twitter.com/(.+?)/status/(.+)');
+	var baseFilename = RegExp.$1 + '_' + RegExp.$2;
+
 	var num = 1;
 	for(value in result) {
 //			println(result[value]);
@@ -59,7 +59,7 @@ function(){
 			println('filename=' + filename);
 
 			var list = [
-				{ Url: title, Filename: num + '_' + filename }
+				{ Url: title, Filename: baseFilename + '_' + num + '_' + filename }
 			];
 			additem.send (list);
 			++num;
