@@ -1,0 +1,57 @@
+//Dorothy2
+//caption=fuskator/full
+//version=0.1
+//hint=irv list
+//match=http://fuskator.com/full/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	http.data.match("unescape\\('([^']+?\\.fuskator\\.com%2flarge%2f.+?)'\\)");
+	var baseUrl = unescape(RegExp.$1);
+
+	var result = http.data.match("<div id='[0-9]+'>", 'g');
+
+	for (value in result) {
+//		println(result[value]);
+
+		result[value].match("id='([0-9]+)'");
+		var id = RegExp.$1;
+		var imgSrc = 'http:' + baseUrl + id + '.jpg';
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: filename }
+		];
+		additem.send (list);
+	}
+
+	exit ();
+}
