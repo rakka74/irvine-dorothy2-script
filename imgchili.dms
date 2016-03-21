@@ -1,0 +1,46 @@
+//Dorothy2
+//caption=imgchili
+//version=0.1
+//hint=—á)http://imgchili.net/show/63515/63515710_sergey034__(1).jpg‚ð“o˜^
+//match=http://imgchili.net/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	
+	var cookie=http.responseHeader.cookie.data;
+
+	result = http.data.match('<div id="picture-holder">(.+?)</div>');
+	RegExp.$1.match('src="(.+?)"');
+	var imgSrc = RegExp.$1;
+	println(imgSrc);
+
+	imgSrc.match('.+/(.+)');
+	var filename = RegExp.$1;
+
+	Dorothy.fileName=filename;
+
+	headers.Referer=urlinfo.url;
+	urlinfo.url=imgSrc;
+	var imgSrcUrl=new URL(imgSrc);
+	headers.host=imgSrcUrl.host;
+	headers.Cookie=cookie;
+
+//	headers.Connection='keep-alive';
+//	headers.Accept='image/png,image/*;q=0.8,*/*;q=0.5';
+//	headers['Accept-Encoding']='gzip, deflate';
+//	headers['Accept-Language']='ja,en-US;q=0.7,en;q=0.3';
+//	headers['Cache-Control']='max-age=0';
+	headers['User-Agent']='Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+}
