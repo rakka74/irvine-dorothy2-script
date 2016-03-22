@@ -1,16 +1,16 @@
 |dms–¼|match|AddItemg—p|
 |---|---|---|
-|E-Hentai.dms|http&#58;//g.e-hentai.org/[^g]|~|
-|[bobx.dms](#bobxdms)|http&#58;//www.bobx.com/[^g]|~|
-|flickr.dms|https?://www.flickr.com/photos/|~|
-|fuskator_full.dms|http&#58;//fuskator.com/full/[^g]|›|
-|imgchili.dms|http&#58;//imgchili.net/[^g]|~|
-|imgur.dms|http&#58;//imgur.com/[^g]|›|
-|jkforum.dms|http&#58;//www.jkforum.net/[^g]|›|
-|my_poco_cn.dms|http&#58;//my.poco.cn/[^g]|›|
-|photo_poco_cn_lastphoto.dms|http&#58;//photo.poco.cn/lastphoto[^g]|›|
-|[twitter.dms](#twitterdms)|twitter.com/[^/]+/status|›|
-|xhamster_photos.dms|http&#58;//[^/]*xhamster.com/photos/gallery/[^g]|›|
+|E-Hentai.dms|`http://g.e-hentai.org/[^g]`|~|
+|[bobx.dms](#bobxdms)|`http://www.bobx.com/[^g]`|~|
+|flickr.dms|`https?://www.flickr.com/photos/`|~|
+|fuskator_full.dms|`http://fuskator.com/full/[^g]`|›|
+|imgchili.dms|`http://imgchili.net/[^g]`|~|
+|imgur.dms|`http://imgur.com/[^g]`|›|
+|jkforum.dms|`http://www.jkforum.net/[^g]`|›|
+|my_poco_cn.dms|`http://my.poco.cn/[^g]`|›|
+|photo_poco_cn_lastphoto.dms|`http://photo.poco.cn/lastphoto[^g]`|›|
+|[twitter.dms](#twitterdms)|`twitter.com/[^/]+/status`|›|
+|xhamster_photos.dms|`http://[^/]*xhamster.com/photos/gallery/[^g]`|›|
 
 AddItemg—p‚ª›‚ÌƒXƒNƒŠƒvƒg‚É‚Â‚¢‚Ä‚ÍA  
 https://github.com/rentan/Irvine/tree/master/Dorothy2/common  
