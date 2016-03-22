@@ -2,7 +2,7 @@
 //caption=E-Hentai
 //version=0.1
 //hint=irv list
-//match=http://g.e-hentai.org/[^g]
+//match=http://g.e-hentai.org/s/[^g]
 //ResponseMatch=
 //author=xor(modified:rakka74)
 //path=program
