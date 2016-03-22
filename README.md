@@ -21,22 +21,24 @@ https://github.com/rentan/Irvine/tree/master/Dorothy2/common
 #### E-Hentai.dms
 画像のサムネイル一覧のページ、例えば  
 http://g.e-hentai.org/g/914744/04b52e129e/  
+を階層0でリンクを取得する。
 
-を階層0でリンクを取得する。すると、  
+すると、  
 http://g.e-hentai.org/s/01d7a1a653/914744-22  
 http://g.e-hentai.org/s/0a57cc0513/914744-34  
 　:  
-のような画像単体のページのURLが取得できるので、それらのURLをアイテム登録する。
+のような画像単体のページのURLが取得できるので、それらをアイテム登録する。
 
 #### bobx.dms
 リンクのインポートでフォトセットの画像一覧のページ、例えば  
 http://www.bobx.com/av-idol/mayu-kamiya/photoset/graphis-_115-hatsunugi-0-10-10.html  
 を階層数0でリンクを取得する。
 
+すると、
 http://www.bobx.com/av-idol/mayu-kamiya/large-mayu-kamiya-1459661/  
 http://www.bobx.com/av-idol/mayu-kamiya/large-mayu-kamiya-1459662/  
 　:  
-のような large- となっているURLをアイテム登録。
+のような large- となっているURLが取得できるので、それらをアイテム登録する。
 
 #### flickr.dms
 #### fuskator_full.dms
