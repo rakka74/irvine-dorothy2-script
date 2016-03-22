@@ -5,7 +5,7 @@
 |flickr.dms|`https?://www.flickr.com/photos/`|×|
 |fuskator_full.dms|`http://fuskator.com/full/[^g]`|○|
 |imgchili.dms|`http://imgchili.net/[^g]`|×|
-|[imgur.dms](#imgurdms)|`http://imgur.com/a/[^g]`|○|
+|[imgur_a.dms](#imgur_adms)|`http://imgur.com/a/[^g]`|○|
 |jkforum.dms|`http://www.jkforum.net/[^g]`|○|
 |my_poco_cn.dms|`http://my.poco.cn/[^g]`|○|
 |photo_poco_cn_lastphoto.dms|`http://photo.poco.cn/lastphoto[^g]`|○|
@@ -43,7 +43,7 @@ http://www.bobx.com/av-idol/mayu-kamiya/large-mayu-kamiya-1459662/
 #### flickr.dms
 #### fuskator_full.dms
 #### imgchili.dms
-#### imgur.dms
+#### imgur_a.dms
 http://imgur.com/a/4BFk7  
 http://imgur.com/a/uA9lL#0  
 のようなアルバムのURLをアイテム登録すると、アルバムの全画像のURLのアイテムが追加される。
