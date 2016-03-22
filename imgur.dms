@@ -2,7 +2,7 @@
 //caption=imgur
 //version=0.1
 //hint=irv list
-//match=http://imgur.com/[^g]
+//match=http://imgur.com/a/[^g]
 //ResponseMatch=
 //author=rakka
 //path=program

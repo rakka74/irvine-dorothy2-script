@@ -5,7 +5,7 @@
 |flickr.dms|`https?://www.flickr.com/photos/`|~|
 |fuskator_full.dms|`http://fuskator.com/full/[^g]`|›|
 |imgchili.dms|`http://imgchili.net/[^g]`|~|
-|[imgur.dms](#imgurdms)|`http://imgur.com/[^g]`|›|
+|[imgur.dms](#imgurdms)|`http://imgur.com/a/[^g]`|›|
 |jkforum.dms|`http://www.jkforum.net/[^g]`|›|
 |my_poco_cn.dms|`http://my.poco.cn/[^g]`|›|
 |photo_poco_cn_lastphoto.dms|`http://photo.poco.cn/lastphoto[^g]`|›|
