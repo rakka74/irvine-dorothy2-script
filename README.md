@@ -1,11 +1,11 @@
 |dms名|match|AddItem使用|
 |---|---|---|
-|[E-Hentai.dms](#e-hentaidms)|`http://g.e-hentai.org/[^g]`|×|
+|[E-Hentai.dms](#e-hentaidms)|`http://g.e-hentai.org/s/[^g]`|×|
 |[bobx.dms](#bobxdms)|`http://www.bobx.com/[^g]`|×|
 |flickr.dms|`https?://www.flickr.com/photos/`|×|
 |fuskator_full.dms|`http://fuskator.com/full/[^g]`|○|
 |imgchili.dms|`http://imgchili.net/[^g]`|×|
-|imgur.dms|`http://imgur.com/[^g]`|○|
+|[imgur.dms](#imgurdms)|`http://imgur.com/[^g]`|○|
 |jkforum.dms|`http://www.jkforum.net/[^g]`|○|
 |my_poco_cn.dms|`http://my.poco.cn/[^g]`|○|
 |photo_poco_cn_lastphoto.dms|`http://photo.poco.cn/lastphoto[^g]`|○|
@@ -44,6 +44,10 @@ http://www.bobx.com/av-idol/mayu-kamiya/large-mayu-kamiya-1459662/
 #### fuskator_full.dms
 #### imgchili.dms
 #### imgur.dms
+http://imgur.com/a/4BFk7  
+http://imgur.com/a/uA9lL#0  
+のようなアルバムのURLをアイテム登録すると、アルバムの全画像のURLのアイテムが追加される。
+
 #### jkforum.dms
 #### my_poco_cn.dms
 #### photo_poco_cn_lastphoto.dms
