@@ -34,12 +34,21 @@ function(){
 	};
 	var additem = new AddItem (ini);
 
-	// 画像URLを抽出
-	result = http.data.match(/(href|src)=\"([^"]+twimg[.]com\/media\/[^\/"]+)\"/g);
-
 	// ファイル名
 	urlinfo.url.match('twitter.com/(.+?)/status/(.+)');
-	var baseFilename = RegExp.$1 + '_' + RegExp.$2;
+	var user = RegExp.$1;
+	var status = RegExp.$2;
+
+//	println('<----');
+//	println(http.data);
+//	println('---->');
+
+	http.data.match('"utcTimestamp":"(.+?)"');
+
+	var baseFilename = user + '_' + RegExp.$1 + '_' + status;
+
+	// 画像URLを抽出
+	result = http.data.match(/(href|src)=\"([^"]+twimg[.]com\/media\/[^\/"]+)\"/g);
 
 	var num = 1;
 	for(value in result) {
