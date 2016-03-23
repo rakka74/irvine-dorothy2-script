@@ -34,7 +34,7 @@ http://g.e-hentai.org/s/0a57cc0513/914744-34
 http://www.bobx.com/av-idol/mayu-kamiya/photoset/graphis-_115-hatsunugi-0-10-10.html  
 を階層数0でリンクを取得する。
 
-すると、
+すると、  
 http://www.bobx.com/av-idol/mayu-kamiya/large-mayu-kamiya-1459661/  
 http://www.bobx.com/av-idol/mayu-kamiya/large-mayu-kamiya-1459662/  
 　:  
@@ -54,7 +54,8 @@ http://imgur.com/a/uA9lL#0
 #### twitter.dms
 画像ツイートのstatusのURL、例えば  
 https://twitter.com/suzukisakiika/status/667982087140413440  
-をアイテム登録すると2つの画像がアイテム追加されます。  
+をアイテム登録すると2つの画像がアイテム追加される。
+
 複数のツイートの画像をダウンロードしたい場合は画像のタイムラインのページ、例えば  
 https://twitter.com/suzukisakiika/media  
 で「IrvineにすべてのURLを送る」を実行してstatusのURLを登録すればOK。
