@@ -1,0 +1,82 @@
+//Dorothy2
+//caption=みんくちゃんねる 
+//version=0.1
+//hint=例) http://minkch.com/archives/336.html をアイテム登録
+//match=http://minkch.com/archives/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+//	common_load ('download2');
+
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':'',
+		'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+		'Accept-Language':'ja,en-US;q=0.7,en;q=0.3',
+		'Accept-Encoding':'gzip, deflate',
+		'Cache-Control':'max-age=0',
+		'Connection':'keep-alive'});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var pattern = '<span class=(gr|"gr")>[0-9]+:</span><br />.*?(<a[^<]+?>)?<img[^>]+?class=(pict|"pict").*?>';
+
+	var result = http.data.match(pattern, 'g');
+	if (null == result) {
+		if (http.responseHeader['content-encoding'] == 'gzip') {
+			println('■ 試しに時前でunzip');
+			common_load ('http');
+			var http2 = new Http();
+			http.data = http2.inflate(http.data);
+			result = http.data.match(pattern, 'g');
+		}
+	}
+
+	if (null != result) {
+		for(value in result) {
+			println(result[value]);
+
+			result[value].match('<span class=gr>([0-9]+):</span>');
+			var num = RegExp.$1;
+			println('num='+ num);
+
+			var temp = result[value].match('(<a[^<]+?>)?<img[^<]+?>');
+			if (null == temp.toString().match(/href="(.+?)"/))
+				temp.toString().match(/src="(.+?)"/);
+			var imgSrc = RegExp.$1;
+			println('imgSrc=' + imgSrc);
+
+			imgSrc.match('.+/(.+?)$');
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgSrc, Filename: num + '_' + filename }
+			];
+			additem.send (list);
+		}
+
+		exit();
+	}
+
+	exit();
+
+}

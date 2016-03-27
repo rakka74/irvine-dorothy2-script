@@ -7,6 +7,7 @@
 |imgchili.dms|`http://imgchili.net/[^g]`|×|
 |[imgur_a.dms](#imgur_adms)|`http://imgur.com/a/[^g]`|○|
 |jkforum.dms|`http://www.jkforum.net/[^g]`|○|
+|[minkch.dms](#minkchdms)|`http://minkch.com/archives/[^g]`|○|
 |my_poco_cn.dms|`http://my.poco.cn/[^g]`|○|
 |photo_poco_cn_lastphoto.dms|`http://photo.poco.cn/lastphoto[^g]`|○|
 |[twitter.dms](#twitterdms)|`twitter.com/[^/]+/status`|○|
@@ -49,6 +50,11 @@ http://imgur.com/a/uA9lL#0
 のようなアルバムのURLをアイテム登録すると、アルバムの全画像のURLのアイテムが追加される。
 
 #### jkforum.dms
+#### minkch.dms
+http://minkch.com/archives/336.html  
+のようなarchives/～.htmlをアイテム登録すると、番号が振られた画像のURLのアイテムが追加される。  
+何故かgzipデコードがうまくされないことがあったので、zlib1.dllを使ってデコードするように。
+
 #### my_poco_cn.dms
 #### photo_poco_cn_lastphoto.dms
 #### twitter.dms
