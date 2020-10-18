@@ -1,0 +1,39 @@
+//Dorothy2
+//caption=nudecollect_picture
+//version=0.1
+//hint=—á)http://www.nudecollect.com/graphis_jp/picture/84666-gra_h_maya_h001/category/1342-2014_08_29_maya_hashimoto
+//match=http://www.nudecollect.com/graphis_jp/picture/
+//ResponseMatch=
+//author=rakka74
+//path=program
+//priority=500
+//end
+
+function() {
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	
+	var cookie=http.responseHeader.cookie.data;
+
+	// <img src="../../../galleries-Graphis_JP/Graphis_JP/2014/2014-08-29_Maya_Hashimoto/gra_h_maya-h021.jpg" width="1067" height="1600" alt="gra_h_maya-h021.jpg" id="theMainImage" usemap="#mapOriginal" title="gra h maya-h021 - gra_h_maya-h021.jpg">
+
+	var result = http.data.match('<img[^<>]+?id="theMainImage"[^<]+?>');
+	result.toString().match('src="(.+?)"');
+	RegExp.$1.match('../../../(.+)$');
+	var imgSrc = 'http://www.nudecollect.com/graphis_jp/' + RegExp.$1;
+	
+	imgSrc.match('.+/(.+)');
+	Dorothy.fileName="hoge";//RegExp.$1;
+
+	var url2=new URL(imgSrc);
+
+	headers.Referer=urlinfo.url;
+	urlinfo.url=url2.url;
+	headers.host=url2.host;
+	headers.Cookie=cookie;
+}

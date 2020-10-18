@@ -1,0 +1,81 @@
+//Dorothy2
+//caption=igoumo
+//version=0.1
+//hint=http://www.igoumo.com/riben/bejean/2016/0506/7085.html ‚ð“o˜^
+//match=http://www.igoumo.com/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function() {
+
+	urlinfo.url.match('(.+)\.html');
+	var baseUrl = RegExp.$1;
+
+	common_load('download','test_download');
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var pageUrl = urlinfo.url;
+
+	var pageNum = 1;
+	var num = 1;
+
+	while(1) {
+		var http=download(pageUrl, false, {'Cookie':''});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie = http.responseHeader.cookie.data;
+
+		var result = http.data.match("<img[^<>]+?id='bigimg'[^<>]*?/>", 'g');
+
+		for(value in result) {
+			println(result[value]);
+
+			result[value].match("src='(.+?)'");
+			var imgSrc = RegExp.$1;
+			println('imgSrc=' + imgSrc);
+
+			if(!imgSrc.match('.+/(.+?)\?.*$')){
+				if(!imgSrc.match('.+/(.+?)$')){
+					println('error: fileName');
+					exit();
+				}
+			}
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgSrc, Filename: num + '_' + filename }
+			];
+			additem.send (list);
+
+			++num;
+		}
+
+		++pageNum;
+
+		pageUrl = baseUrl + '_' + pageNum + '.html';
+		//println('pageUrl=' + pageUrl);
+		pageUrl.match('.+/(.+?)$');
+		pageUrlsFilename = RegExp.$1;
+		//println('pageUrlsFilename=' + pageUrlsFilename);
+
+		if (null == http.data.match(pageUrlsFilename)) {
+			break;
+		}
+	}
+
+	exit ();
+}

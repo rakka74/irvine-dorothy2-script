@@ -1,0 +1,72 @@
+//Dorothy2
+//caption=nyahentai
+//version=0.1
+//hint=https://ja.nyahentai.com/g/307077/ Çìoò^
+//match=https://ja.nyahentai.com/g/[^/]+/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	//ignoreChunkedÇtrueÇ…ÇµÇ»Ç¢Ç∆ì«Ç›çûÇﬂÇ»Ç¢
+	var http=download(url.url,false,{'cookie':''},true);
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('<a class="gallerythumb".+?>', 'g');
+
+	var num=1;
+	for(value in result) {
+		println(result[value]);
+
+		result[value].match(/href="(.+?)"/);
+		var pageUrl = RegExp.$1;
+		pageUrl = "https://ja.nyahentai.com" + pageUrl;
+		println('pageUrl=' + pageUrl);
+
+		var http=download(pageUrl, false, {'Cookie':''}, true);
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie = http.responseHeader.cookie.data;
+
+		var result2 = http.data.match('<img[^>]*class=".*?current-img.*?".*?>');
+		if (result2 == null) {
+			println("Åömatch return null");
+		}
+		else {
+			result2.toString().match('src="(.+?)"');
+			var imgUrl = RegExp.$1;
+			println('imgUrl=' + imgUrl);
+
+			imgUrl.match('.+/(.+?)$');
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgUrl, Filename: num + '_' + filename }
+			];
+			additem.send (list);
+
+			++num;
+		}
+	}
+
+	exit ();
+}

@@ -1,0 +1,40 @@
+//Dorothy2
+//caption=huaban
+//version=0.08
+//hint=http://huaban.com/pins/657167198/ Çìoò^
+//match=http://huaban.com/pins/
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+	common_load('download','test_download');
+
+	// http://huaban.com/pins/657166966/ Ç
+	// http://huaban.com/pins/657166966/zoom/ Ç…ïœçX
+	var url=new URL(urlinfo.url + "zoom/");
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	var cookie=http.responseHeader.cookie.data;
+
+	var result = http.data.match('app.page\["pin"\].+?\}\}');
+	result.toString().match('"key":"(.+?)"');
+	
+	var filename = RegExp.$1;
+	var imgSrc = "http:" + "//img.hb.aicdn.com/" + filename;
+
+	println('imgSrc=' + imgSrc);
+
+	if(item.filename==''){
+	// Ç∆ÇËÇ†Ç¶Ç∏ägí£éqÇjpgÇ…ÅB
+		Dorothy.fileName = filename +".jpg";
+	}
+	headers.Referer=urlinfo.url;
+	url = new URL(imgSrc);
+	urlinfo.url=url.url;
+	headers.host=url.host;
+	headers.Cookie=cookie;
+}

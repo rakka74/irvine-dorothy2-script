@@ -1,0 +1,65 @@
+//Dorothy2
+//caption=img.jpger.info
+//version=0.1
+//hint=—á)http://img.jpger.info/%EF%BD%8A%EF%BD%92%E3%82%A2%E3%82%A4%E3%83%89%E3%83%AB%E3%80%80%EF%BC%AD%E5%AD%97%E9%96%8B%E8%84%9A/pic9.html ‚ðƒAƒCƒeƒ€“o˜^
+//match=http://img.jpger.info/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+//	println('raw=' + urlinfo.url);
+//	println('decodeURI=' + decodeURI(urlinfo.url));
+//	println('decodeURI.toSJIS=' + decodeURI(urlinfo.url).fromUTF8toSJIS());
+
+	decodeURI(urlinfo.url).fromUTF8toSJIS().match('img.jpger.info/(.+?)/(.+?).html');
+	var baseFilename = RegExp.$1 + ' - ' + RegExp.$2 + ' - ';
+	println('baseFilename=' + baseFilename);
+
+	var result = http.data.match('<div id="picmain">.+?</div>');
+	result = result.toString().match('<img.+?>', 'g');
+
+	var num = 1;
+	for(value in result) {
+//		println(result[value]);
+
+		result[value].match(/src="(.+?)"/);
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: baseFilename + num + '_' + filename }
+		];
+		additem.send (list);
+
+		++num;
+	}
+
+	exit();
+}

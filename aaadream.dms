@@ -1,0 +1,61 @@
+//Dorothy2
+//caption=http://www3.aaadream.com 嘿軍團
+//version=0.1
+//hint=irv list
+//match=http://www3.aaadream.com/[^g]
+//ResponseMatch=
+//author=xor(modified:rakka74)
+//path=program
+//priority=500
+//end
+
+function(){
+
+// !!!!! zoomfile="..." をアイテムに追加
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':'', 'User-Agent':userAgent});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var num = 1;
+	var result = http.data.match('zoomfile="(.+?)"', 'g');
+	for(value in result) {
+		result[value].match('zoomfile="(.+?)"');
+
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+		if(!imgSrc.match('.+/(.+?)\?.*$')){
+			if(!imgSrc.match('.+/(.+?)$')){
+				println('error: fileName');
+				exit();
+			}
+		}
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+		++num;
+	}
+
+	exit ();
+}

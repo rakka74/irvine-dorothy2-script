@@ -1,0 +1,67 @@
+//Dorothy2
+//caption=59pic
+//version=0.1
+//hint=1‚Ìhttp://www.59pic.com/mn/1072.html‚ð“o˜^
+//match=http://www.59pic.com/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var url=new URL(urlinfo.url);
+
+	var num=1;
+	while(1) {
+		var http=download(url.url,false,{'Cookie':'', 'User-Agent':userAgent});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie=http.responseHeader.cookie.data;
+
+		var result = http.data.match('<img[^>]+?id="bigImg".+?>');
+		println('result=' + result);
+		result.toString().match('src="(.+?)"');
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		if(!imgSrc.match('.+/(.+)$')){
+			println('error: fileName');
+			exit();
+		}
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+		++num;
+
+		var result = http.data.match('<a[^>]+?class="pageNext".*?>');
+		println('result='+result);
+		if (!result) {
+			break;
+		}
+		
+		result.toString().match('href="(.+?)"');
+		url=new URL(RegExp.$1);
+	}
+
+	exit ();
+}

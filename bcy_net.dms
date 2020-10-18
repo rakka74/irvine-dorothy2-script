@@ -1,0 +1,62 @@
+//Dorothy2
+//caption=bcy.net
+//version=0.1
+//hint=例) http://bcy.net/coser/detail/1036/957086, http://bcy.net/daily/detail/35709 をアイテム登録
+//match=http://bcy.net/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	var cookie = 'lang_set=ja; LOGGED_USER=tYpSPkg3SxDNL%2F0jV4ZHETQ%3D%3AnVmCqeG45TZV0r6mpmAaWw%3D%3D; acw_tc=AQAAAIg7akDrFAEAJrjFcUbaRIOnwCWO; PHPSESSID=chefq09p3lja1ana39bdoirec3; CNZZDATA1257708097=1931347421-1482913337-http%253A%252F%252Fwww.weibo.com%252F%7C1483294308; Hm_lvt_330d168f9714e3aa16c5661e62c00232=1482953870,1482953962,1483034219,1483298803; Hm_lpvt_330d168f9714e3aa16c5661e62c00232=1483298804; mobile_set=no';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':cookie});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match("<img[^>]+?class='detail_std detail_clickable'.*?>", 'g');
+
+	var num = 1;
+	for(value in result) {
+		println(result[value]);
+
+		result[value].match(/src='(.+?)'/);
+		var imgSrc = RegExp.$1;
+		// http://img9.bcyimg.com/coser/1036/post/c04hx/f1061030c6dc11e68c8b031d6f57386b.jpg/w650
+		// のように最後にサイズを表す文字列が追加されてるので除去
+		imgSrc.match("(.+)/[^/]+$");
+		imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+
+		++num;
+	}
+
+	exit();
+}

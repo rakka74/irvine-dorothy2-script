@@ -1,0 +1,56 @@
+//Dorothy2
+//caption=pconline
+//version=0.1
+//hint=—á) http://bcy.net/coser/detail/1036/957086, http://bcy.net/daily/detail/35709 ‚ðƒAƒCƒeƒ€“o˜^
+//match=http://dp.pconline.com.cn/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('<div class="picFrame">.+?</div>', 'g');
+
+	var num = 1;
+	for(value in result) {
+		println(result[value]);
+
+		result[value].match(/src="(.+?)"/);
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+
+		++num;
+	}
+
+	exit();
+}

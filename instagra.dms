@@ -1,0 +1,57 @@
+//Dorothy2
+//caption=Instagram
+//version=0.02
+//hint=Twitter・TwilogのページからURLを渡してください
+//match=https?://(www[.])?(i[.])?[Ii]nstagr[.]?am
+//author=Abcdefgh
+//path=program
+//priority=500
+//end
+//created 14,Dec.,2011 by Abcdefgh
+//modified 27,Apr.,2014 by Abcdefgh
+//ファイル名の単純変換が不可能な為
+
+function(){
+	println('instagra.dms start');
+	// 画像紹介ページをダウンロード
+	var title = urlinfo.url;
+	title = title.replace(/http:/,"https:");
+	var url = new URL(title);
+	urlinfo.url = url.url;
+	headers.host = url.host;
+	common_load('download');
+	var http = download(urlinfo.url,true);
+	if(http.responseHeader.code != 200){
+		return retry('error--->' + http.responseHeader.code);
+	}
+	// 本画像URLを抽出
+	if (!http.data.match(/og:image\" content=\"([^"]+)\"/)) {
+		println('error---> オリジナルサイズの画像が見つかりません');
+		exit();
+	}
+	var title = RegExp.$1;
+
+	var url = new URL(title);
+	urlinfo.url = url.url;
+	headers.host = url.host;
+	//ファイル名を抽出
+	if (!title.match(/([^\/]+)$/)) {
+		println('error---> ファイル名が見つかりません');
+		exit();
+	}
+	var filename = RegExp.$1;
+	if (filename.match(/(.+)\?.+/)) { // ?以降を削除
+		filename = RegExp.$1;
+	}
+
+	// "username": "ataractia"
+	http.data.match(/"username": "(.+?)"/);
+	var username = RegExp.$1;
+
+	// "date": 1462970304,
+	http.data.match(/"date": ([0-9]+)/);
+	var dateStr = RegExp.$1;
+	var date = new Date(parseInt(dateStr) * 1000);
+
+	Dorothy.fileName = username + " - " + date.toString() + " - " + filename;
+}

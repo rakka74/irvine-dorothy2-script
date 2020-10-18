@@ -1,0 +1,67 @@
+//Dorothy2
+//caption=luandan.net
+//version=0.1
+//hint=1‚Ìhttp://luandan.net/%E6%9E%81%E5%93%81%E6%AD%A3%E5%A6%B9.html‚ð“o˜^
+//match=http://luandan.net/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var url=new URL(urlinfo.url);
+
+	var num=1;
+	var page=1;
+	while(1) {
+		var http=download(url.url,false,{'Cookie':''});
+		if(http.responseHeader.code!=200){
+			exit();
+		}
+		var cookie=http.responseHeader.cookie.data;
+
+		var result = http.data.match('"http://[^>]+?/large/[^>]+?"', 'g');
+		if (null != result) {
+			for(value in result) {
+				result[value].match('"(.+)"');
+				var imgSrc = RegExp.$1;
+				println('imgSrc=' + imgSrc);
+
+				imgSrc.match('.+/(.+)$');
+				var filename = RegExp.$1;
+				println('filename=' + filename);
+
+				var list = [
+					{ Url: imgSrc, Filename: num + '_' + filename }
+				];
+				additem.send (list);
+				++num;
+			}
+		}
+
+		++page;
+
+		result = http.data.match('<div class="article-paging">(.+?)</div>');
+		println('RegExp.$1=' + RegExp.$1);
+		if (!RegExp.$1.match('.html/' + page)) {
+			exit();
+		}
+
+		url = new URL(urlinfo.url + '/' + page);
+	}
+
+	exit ();
+}

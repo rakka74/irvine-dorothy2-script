@@ -1,7 +1,7 @@
 //Dorothy2
 //caption=みんくちゃんねる 
 //version=0.1
-//hint=例) http://minkch.com/archives/336.html をアイテム登録
+//hint=例) http://minkch.com/archives/1341.html をアイテム登録
 //match=http://minkch.com/archives/[^g]
 //ResponseMatch=
 //author=rakka
@@ -37,10 +37,13 @@ function(){
 	};
 	var additem = new AddItem (ini);
 
-	var pattern = '<span class=(gr|"gr")>[0-9]+:</span><br />.*?(<a[^<]+?>)?<img[^>]+?class=(pict|"pict").*?>';
+	var pattern = '<div[^>]+?class=gr>[0-9]+:.*?</div><a[^>]+?href=".+?"';
 
 	var result = http.data.match(pattern, 'g');
 	if (null == result) {
+		println('null == result');
+		exit();
+
 		if (http.responseHeader['content-encoding'] == 'gzip') {
 			println('■ 試しに時前でunzip');
 			common_load ('http');
@@ -54,13 +57,12 @@ function(){
 		for(value in result) {
 			println(result[value]);
 
-			result[value].match('<span class=gr>([0-9]+):</span>');
+			result[value].match('<div[^>]+?class=gr>([0-9]+):');
 			var num = RegExp.$1;
 			println('num='+ num);
 
-			var temp = result[value].match('(<a[^<]+?>)?<img[^<]+?>');
-			if (null == temp.toString().match(/href="(.+?)"/))
-				temp.toString().match(/src="(.+?)"/);
+			if (null == result[value].match(/href="(.+?)"/))
+				result[value].match(/src="(.+?)"/);
 			var imgSrc = RegExp.$1;
 			println('imgSrc=' + imgSrc);
 

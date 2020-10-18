@@ -1,0 +1,58 @@
+//Dorothy2
+//caption=discuss
+//version=0.1
+//hint=—á) http://www.discuss.com.hk/viewthread.php?tid=25580112 ‚ðƒAƒCƒeƒ€“o˜^
+//match=http://www.discuss.com.hk/viewthread.php
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('<div[^>]+?id="postmessage_[0-9]+".*?>.+?</div>');
+	println(result.toString());
+	result = result.toString().match('<img[^>]+?onclick="zoom\(this\)".+?>', 'g');
+
+	var num = 1;
+	for(value in result) {
+		println(result[value]);
+
+		result[value].match(/src="(.+?)"/);
+		var imgSrc = RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+
+		++num;
+	}
+
+	exit();
+}

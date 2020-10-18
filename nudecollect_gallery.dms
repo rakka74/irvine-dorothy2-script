@@ -1,0 +1,69 @@
+//Dorothy2
+//caption=nudecollect_gallery
+//version=0.1
+//hint=http://www.nudecollect.com/graphis_jp/index/category/1342-2014_08_29_maya_hashimoto ‚ð“o˜^
+//match=http://www.nudecollect.com/graphis_jp/index/category/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function() {
+
+	common_load('download','test_download');
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var pageUrl = urlinfo.url;
+
+	var num = 1;
+
+	while(1) {
+		var http=download(pageUrl, false, {'Cookie':''});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie = http.responseHeader.cookie.data;
+
+		// <a class="col-thumbnail" href="../../picture/84684-gra_h_maya_h019/category/1342-2014_08_29_maya_hashimoto">
+		// <a class="col-thumbnail" href="../../../picture/84686-gra_h_maya_h021/category/1342-2014_08_29_maya_hashimoto">
+		var result = http.data.match('<a class="col-thumbnail"[^<>]+?>', 'g');
+
+		for(value in result) {
+			println(result[value]);
+
+			result[value].match('href="(.+?)"');
+			var imgPage = 'http://www.nudecollect.com/graphis_jp/' + RegExp.$1.replace(/\.\.\//g, '');
+			println('imgPage=' + imgPage);
+
+			var list = [
+				{ Url: imgPage, Filename: num + '.jpg' }
+			];
+			additem.send (list);
+
+			++num;
+		}
+
+		// <li><a href="../../index/category/1342-2014_08_29_maya_hashimoto/start-20" rel="next">Next</a></li>
+		// <li><a href="../../../index/category/1342-2014_08_29_maya_hashimoto/start-40" rel="next">Next</a></li>
+		result = http.data.match('<a[^<>]+?rel="next">');
+		if (result == null) {
+			break;
+		}
+
+		result.toString().match('href="(.+?)"');
+		pageUrl = 'http://www.nudecollect.com/graphis_jp/' + RegExp.$1.replace(/\.\.\//g, '');
+		println('pageUrl=' + pageUrl);
+	}
+
+	exit ();
+}

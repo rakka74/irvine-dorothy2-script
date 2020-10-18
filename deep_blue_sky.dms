@@ -1,0 +1,81 @@
+//Dorothy2
+//caption=Deep Blue Sky
+//version=0.1
+//hint=—á)http://deepbs.tistory.com/7090 ‚ðƒAƒCƒeƒ€“o˜^
+//match=http://deepbs.tistory.com/[^g]
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function() {
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('<div class="imageblock center".+?</div>', 'g');
+	if (null != result) {
+		var num = 1;
+		for(value in result) {
+	//		println(result[value]);
+
+			result[value].match(/src="(.+?)"/);
+			var imgSrc = RegExp.$1;
+			println('imgSrc=' + imgSrc);
+
+			imgSrc.match('.+/(.+?)$');
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgSrc, Filename: num + '_' + filename + '.jpg'}
+			];
+			additem.send (list);
+
+			++num;
+		}
+		exit();
+	}
+
+	result = http.data.match('<span[^>]+?data-lightbox="lightbox".*?>', 'g');
+	if (null != result) {
+		var num = 1;
+		for(value in result) {
+	//		println(result[value]);
+
+			result[value].match(/data-url="(.+?)"/);
+			var imgSrc = RegExp.$1;
+			println('imgSrc=' + imgSrc);
+
+			imgSrc.match('.+/(.+?)$');
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgSrc, Filename: num + '_' + filename + '.jpg'}
+			];
+			additem.send (list);
+
+			++num;
+		}
+		exit();
+	}
+	exit();
+}

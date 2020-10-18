@@ -1,0 +1,57 @@
+//Dorothy2
+//caption=wnacg
+//version=0.1
+//hint=—á) http://www.wnacg.org/photos-slide-aid-30955.html, http://www.wnacg.org/photos-index-page-1-aid-34888.html ‚ðƒAƒCƒeƒ€“o˜^
+//match=http://www.wnacg.org/photos-
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	urlinfo.url.match('aid-(.+?)\.html');
+	var id = RegExp.$1;
+	var url = 'http://www.wnacg.org/photos-gallery-aid-' + id + '.html';
+
+	common_load('download','test_download');
+	var http=download(url, false, {'Cookie':''});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('url:[^,]+?\\".+?\\"', 'g');
+
+	var num = 1;
+	for(value in result) {
+		println(result[value]);
+
+		result[value].match('\\"(.+?)\\"');
+		var imgSrc = 'http://www.wnacg.org' + RegExp.$1;
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: num + '_' + filename }
+		];
+		additem.send (list);
+
+		++num;
+	}
+
+	exit();
+}

@@ -2,7 +2,7 @@
 //caption=JKF
 //version=0.1
 //hint=irv list
-//match=http://www.jkforum.net/[^g]
+//match=https://www.jkforum.net/
 //ResponseMatch=
 //author=xor(modified:rakka74)
 //path=program

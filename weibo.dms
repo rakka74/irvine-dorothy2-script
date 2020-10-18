@@ -1,0 +1,100 @@
+//Dorothy2
+//caption=weibo
+//version=0.1
+//hint=例) http://www.weibo.com/2738705003/AFlQPzqbI をアイテム登録
+//match=http://www.weibo.com/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	var cookie = 'SUHB=08JrEjeC0-Fk3j; SCF=Agh2o5ANclEvpowUW0zql4WiFVjqZ4lYSSll9gTrGZ1nsL_h-JsQfIlInb19JETO6h_LRKg39DzABDbsnr8WoQc.; SUB=_2AkMvNpIxf8NhqwJRmPwcy27ga49wzQ7EieKZamPqJRMxHRl-yT83qhYdtRBnFMuKJ20shUtUFDpDO9tVpOdaGw..; SUBP=0033WrSXqPxfM72-Ws9jqgMF55529P9D9W56-ajdaYElYxj4bwGlF3DK; YF-Page-G0=f994131fbcce91e683b080a4ad83c421; YF-Ugrow-G0=5b31332af1361e117ff29bb32e4d8439; YF-V5-G0=fec5de0eebb24ef556f426c61e53833b; WBtopGlobal_register_version=ab9111fb56d70a2b; WB_register_version=ab9111fb56d70a2b; WBStore=97e433e7cc20168d|undefined; user_active=201604100249; user_unver=176b9a0b0bb4034c1feaeced39de73a8; login_sid_t=8f15463f452e6e619cbc3d9772d0';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url, false, {'Cookie':cookie});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	//println(http.data);
+
+	var result = http.data.match('<a[^>]+?date=.+?>');
+	result.toString().match('title=\\"(.+?)\\"');
+	var date = RegExp.$1;
+	println('date: ' + date);
+
+	http.data.match('nick-name=\\"(.+?)\\"');
+	var nickName = RegExp.$1.fromUTF8toSJIS();
+	println('nickName: : ' + nickName);
+
+	http.data.match('&domain=(.+?)&');
+	var domain = RegExp.$1;
+	println('domain: : ' + domain);
+
+	http.data.match('<title>(.+?)</title>');
+	var title = RegExp.$1;
+	// 何故か replace(/\x0a/g, ' ') で複数の改行が置換されなかったので
+	while(null != title.match(/\x0a|\x0d/)) {
+		title = title.replace(/\x0a|\x0d/g, ' ');
+	}
+	title = title.fromUTF8toSJIS().replace(/\?|:|\*|\/|\\/g, '_');
+	println('title: : ' + title);
+
+	var f = new File('output\' + nickName.replace(/\?/g, '_') + ' ' + date.replace(':', '_') + ' ' + title + '.url');
+	f.open ('w');
+	f.write ("[InternetShortcut]\nURL=" + urlinfo.url);
+	f.close ();
+
+//	exit();
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	http.data.match('picture_count == ([0-9]+)-->');
+	var picCount = parseInt(RegExp.$1);
+	println('picCount: : ' + picCount.toString());
+
+	var result = http.data.match('picture_count == ([0-9]+)-->.*');
+	result = result.toString().match('<img src=\\"[^>]+?\\">', 'g');
+
+	var num = 1;
+	for(value in result) {
+		println(result[value]);
+
+		result[value].match(/\\"(.+?)\\"/);
+		var imgSrc = RegExp.$1;
+		imgSrc = imgSrc.replace(/\\/g, '');
+//		imgSrc = imgSrc.replace('thumb150', 'large');
+		imgSrc.match("(http://.*?/).+?(/.*)");
+		imgSrc = RegExp.$1 + "large" + RegExp.$2;
+		println('imgSrc=' + imgSrc);
+
+		imgSrc.match('.+/(.+?)$');
+		var filename = nickName + ' ' + date + ' ' + num + ' ' + RegExp.$1;
+		println('filename=' + filename);
+
+		var list = [
+			{ Url: imgSrc, Filename: filename }
+		];
+		additem.send (list);
+
+		if (num == picCount) break;
+
+		++num;
+	}
+
+	exit();
+}

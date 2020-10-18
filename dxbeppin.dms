@@ -1,0 +1,78 @@
+//Dorothy2
+//caption=dxbeppin
+//version=0.1
+//hint=http://dxbeppin-r.com/archives/14319 ‚ð“o˜^
+//match=http://dxbeppin-r.com/archives/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	var baseUrl = urlinfo.url;
+
+	common_load('download','test_download');
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var pageUrl = baseUrl;
+
+	var pageNum = 1;
+	var num = 1;
+	while(1) {
+		var http=download(pageUrl, false, {'Cookie':''});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie = http.responseHeader.cookie.data;
+
+		var article = http.data.match('<article class="article">.+?</article>');
+
+		article = article.toString().replace(/<noscript>.+?<\/noscript>/g, '');
+
+		var result = article.match('data-orig-file=".+?"', 'g');
+		for(value in result) {
+			println(result[value]);
+
+			result[value].match('data-orig-file="(.+?)"');
+			var imgSrc = RegExp.$1;
+			println('imgSrc=' + imgSrc);
+
+			if(!imgSrc.match('.+/(.+?)\?.*$')){
+				if(!imgSrc.match('.+/(.+?)$')){
+					println('error: fileName');
+					exit();
+				}
+			}
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgSrc, Filename: num + '_' + filename }
+			];
+			additem.send (list);
+
+			++num;
+		}
+
+		++pageNum;
+
+		pageUrl = baseUrl + '/' + pageNum;
+
+		if (null == http.data.match(pageUrl)) {
+			break;
+		}
+	}
+
+	exit ();
+}

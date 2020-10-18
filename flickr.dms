@@ -31,4 +31,12 @@ function(){
 	urlinfo.url=url.url;
 	headers.host=url.host;
 	headers.Cookie=cookie;
+	//headers['accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+	//headers['Accept-Language'] = 'ja,en-US;q=0.7,en;q=0.3';
+	//headers['Accept-Encoding'] = 'gzip, deflate, br';
+	//headers['connection'] = 'keep-alive';
+	//headers['Upgrade-Insecure-Requests'] = '1';
+	//headers['Cache-Control'] = 'max-age=0';
+
+
 }

@@ -1,0 +1,73 @@
+//Dorothy2
+//caption=meitug
+//version=0.1
+//hint=1‚Ìhttp://www.meitug.com/mntp/5334.html‚ð“o˜^
+//match=http://www.meitug.com/mntp/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var url=new URL(urlinfo.url);
+
+	urlinfo.url.match('(.+).html');
+	var baseUrl = RegExp.$1;
+
+	var num=1;
+	var pageNo=1;
+	while(1) {
+		++pageNo;
+		nextUrl=new URL(baseUrl +'_' + pageNo + '.html');
+
+		var http=download(url.url,false,{'Cookie':'', 'User-Agent':userAgent});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie=http.responseHeader.cookie.data;
+
+		var result = http.data.match('<a href="' + nextUrl.url + '">.*?</a>', 'g');
+		if (null == result)
+			result = http.data.match('<a href="' + url.url + '">.*?</a>', 'g');
+
+		if (null == result)
+			break;
+
+		for(value in result) {
+//			println(result[value]);
+			result[value].match(/src="(.+?)"/);
+			var imgSrc = RegExp.$1;
+//			println('imgSrc=' + imgSrc);
+
+			if (imgSrc.match('http://www.meitug.com/uploadfile/.*/(.+?)$')) {
+				var filename = RegExp.$1;
+//				println('filename=' + filename);
+
+				var list = [
+					{ Url: imgSrc, Filename: num + '_' + filename }
+				];
+				additem.send (list);
+				++num;
+			}
+		}
+
+		url = nextUrl;
+	}
+
+	exit ();
+}

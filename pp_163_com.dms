@@ -1,0 +1,68 @@
+//Dorothy2
+//caption=pp.163.com
+//version=0.1
+//hint=http://pp.163.com/huafox/pp/12542090.html ‚ð“o˜^
+//match=http://pp.163.com/[^g]
+//ResponseMatch=
+//author=rakka74
+//path=program
+//priority=500
+//end
+
+function(){
+
+//	var wait = 10 * 1000;	//milisec
+
+	//debug=true;
+//	println('wait-'+wait/1000+'sec');
+//	sleep(wait);
+
+	var userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0';
+
+	common_load('download','test_download');
+	var url=new URL(urlinfo.url);
+	var http=download(url.url,false,{'Cookie':'', 'User-Agent':userAgent});
+	if(http.responseHeader.code!=200){
+		return retry('error--->'+http.responseHeader.code);
+	}
+
+	var cookie=http.responseHeader.cookie.data;
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+	var result = http.data.match('<img[^>]+?data-lazyload-src="[^>]+?"', 'g');
+	var num = 1;
+	for(value in result) {
+//			println(result[value]);
+
+			result[value].match('data-lazyload-src="(.+?)"');
+			var imgSrc = RegExp.$1;
+			println('imgSrc=' + imgSrc);
+
+			if(!imgSrc.match('.+/(.+?)\?.*$')){
+				if(!imgSrc.match('.+/(.+?)$')){
+					println('error: fileName');
+					exit();
+				}
+			}
+
+			var filename = RegExp.$1;
+			println('filename=' + filename);
+
+			var list = [
+				{ Url: imgSrc, Filename: num + '_' + filename }
+			];
+			additem.send (list);
+			++num;
+	}
+
+	exit ();
+}
