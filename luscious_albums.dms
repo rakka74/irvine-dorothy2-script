@@ -1,0 +1,66 @@
+//Dorothy2
+//caption=www.luscious.net/albums
+//version=0.1
+//hint=https://www.luscious.net/albums/met_art_elle_b_epacs_249482/ を登録
+//match=https://www.luscious.net/albums/[^/]+/
+//ResponseMatch=
+//author=rakka
+//path=program
+//priority=500
+//end
+
+function(){
+
+	common_load('download','test_download');
+
+	common_load ('additem');
+
+	var ini = {
+		Mode: 'Auto',
+//		Queue: '/Default',
+		Listname: '',
+		Workaround: false
+	};
+	var additem = new AddItem (ini);
+
+// https://www.luscious.net/albums/met_art_elle_b_epacs_249482/read/?index=0
+// の 0　の部分を増やしていく。
+
+	var baseUrl = urlinfo.url;
+
+	var index = 0;
+
+	while(1) {
+		imgPageUrl = baseUrl + "read/?index=" + index + "&view=slideshow&sorting=rating_all_time";
+		println("★imgPageUrl=" + imgPageUrl);
+		
+		var http=download(imgPageUrl, false, {'Cookie':''});
+		if(http.responseHeader.code!=200){
+			return retry('error--->'+http.responseHeader.code);
+		}
+		var cookie = http.responseHeader.cookie.data;
+
+//		var result = http.data.match('<img[^>]+src="([^>]+?).640x0.jpg" [^>]+ class="o-clickable safe_link"/>');
+		var result = http.data.match('<img[^>]+src="([^>]+?)" [^>]+ class="o-clickable safe_link"/>');
+		if (result == null)
+			break;
+
+		var imgUrl = RegExp.$1;
+		result = imgUrl.match('(.+?).[0-9]+x[0-9]+.jpg');
+		if (null != result)
+			imgUrl = RegExp.$1 + ".jpg";
+
+		println("★imgUrl="+ imgUrl);
+
+		imgUrl.match('.+/(.+?)$');
+		var filename = RegExp.$1;
+
+		var list = [
+			{ Url: imgUrl, Filename: filename }
+		];
+		additem.send (list);
+
+		index++;
+	}
+
+}
